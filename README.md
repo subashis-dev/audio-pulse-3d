@@ -15,6 +15,11 @@
 * **Real-time 60 FPS 3D WebGL Visualization:** Three dynamic reactive modes (Orbital Particle Nebula, Flowing Spectrogram Mountain, and Cymatics Resonance Sphere).
 * **Mathematical Audio DSP Engine:** Extracts exact BPM tempo, musical key & scale (via 12-dimensional Chroma Pitch Class Profiles & Krumhansl-Schmuckler harmonic correlation), Camelot Wheel mixing codes, dynamic range, RMS loudness, and peak dBFS.
 * **Deep Neural Spectrogram AI:** A custom 650K-parameter PyTorch CNN (`SonixAudioNet`) trained on an RTX 3060 and exported to ONNX Web for real-time offline genre classification and mood/energy analysis.
+* **Neural 4-Stem Demixer & Multitrack Mixer:**
+  * Separates any input audio into 4 isolated audio streams: 🎤 **Vocals**, 🥁 **Drums**, 🎸 **Bass**, and 🎹 **Melody**.
+  * Dedicated **Mute (M)**, **Solo (S)**, and volume faders per stem.
+  * 3D visualizer dynamically morphs based on which stems are active (muting drums halts percussive kicks; soloing vocals isolates the glowing aura).
+  * 1-click offline export of separated stems as standard uncompressed `.wav` files.
 * **Dual Intelligence Export:**
   * **Export JSON:** Full raw acoustic and neural telemetry object for programmatic analysis.
   * **Export Story Report (.txt):** In-depth natural language acoustic intelligence dossier featuring harmonic mixing guidance, tempo cadence evaluation, dynamic mastering analysis, and curator recommendations.
