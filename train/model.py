@@ -25,11 +25,14 @@ class ConvBlock(nn.Module):
 
 class SonixAudioNet(nn.Module):
     """
-    Lightweight Deep Spectrogram CNN for 100% Offline Audio Intelligence.
-    Dual-head: predicts Genre probabilities and Mood / Acoustic attributes.
+    Advanced Multi-Head Spectrogram CNN for 100% Offline Edge Intelligence.
+    Heads:
+      1. Genre (10 Classes - Softmax)
+      2. Mood & Valence (4 Dimensions - Sigmoid)
+      3. Multi-Instrument Presence (8 Instruments - Sigmoid Multi-Label)
     Input: [B, 1, 128, 128] (Frequency bins x Time frames)
     """
-    def __init__(self, num_genres=10, num_moods=4):
+    def __init__(self, num_genres=10, num_moods=4, num_instruments=8):
         super().__init__()
         self.stem = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1, bias=False),
@@ -54,11 +57,19 @@ class SonixAudioNet(nn.Module):
         # Head 1: Genre logits (Softmax)
         self.genre_head = nn.Linear(256, num_genres)
         
-        # Head 2: Mood / Audio dimensions (Sigmoid: [energy, valence, danceability, acousticness])
+        # Head 2: Mood / Audio dimensions (Sigmoid)
         self.mood_head = nn.Sequential(
             nn.Linear(256, 128),
             nn.LeakyReLU(0.1),
             nn.Linear(128, num_moods),
+            nn.Sigmoid()
+        )
+
+        # Head 3: Multi-Instrument Detection (Sigmoid Multi-Label)
+        self.instrument_head = nn.Sequential(
+            nn.Linear(256, 128),
+            nn.LeakyReLU(0.1),
+            nn.Linear(128, num_instruments),
             nn.Sigmoid()
         )
 
@@ -74,13 +85,15 @@ class SonixAudioNet(nn.Module):
         
         genre_logits = self.genre_head(feat)
         mood_scores = self.mood_head(feat)
-        return genre_logits, mood_scores
+        instrument_scores = self.instrument_head(feat)
+        return genre_logits, mood_scores, instrument_scores
 
 if __name__ == "__main__":
     model = SonixAudioNet()
     total_params = sum(p.numel() for p in model.parameters())
     print(f"SonixAudioNet Total Parameters: {total_params:,}")
     dummy_input = torch.randn(2, 1, 128, 128)
-    genre_out, mood_out = model(dummy_input)
-    print("Genre output shape:", genre_out.shape)
-    print("Mood output shape:", mood_out.shape)
+    g, m, inst = model(dummy_input)
+    print("Genre shape:", g.shape)
+    print("Mood shape:", m.shape)
+    print("Instrument shape:", inst.shape)

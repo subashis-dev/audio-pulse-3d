@@ -96,6 +96,7 @@ class NeuralAudioClassifier {
 
         const genreLogits = results.genre_logits.data;
         const moodScores = results.mood_scores.data;
+        const instScores = results.instrument_scores ? results.instrument_scores.data : null;
 
         // Apply Softmax to genre logits
         const expLogits = [];
@@ -111,6 +112,23 @@ class NeuralAudioClassifier {
           probability: Math.round((val / expSum) * 100)
         })).sort((a, b) => b.probability - a.probability);
 
+        // Format Multi-Instrument Scores
+        const instrumentLabels = this.classes.instruments || [
+          "Vocals / Voice", "Electric Guitar", "Acoustic Guitar", "Piano / Keys",
+          "Synthesizer / Arp", "Bass / 808 Sub", "Drums / Percussion", "Brass & Strings"
+        ];
+        
+        let instruments = [];
+        if (instScores) {
+          instruments = instrumentLabels.map((name, idx) => ({
+            name: name,
+            probability: Math.round((instScores[idx] || 0) * 100),
+            detected: (instScores[idx] || 0) >= 0.40
+          })).sort((a, b) => b.probability - a.probability);
+        } else {
+          instruments = this.heuristicInstruments(genreProbabilities[0].genre);
+        }
+
         return {
           topGenre: genreProbabilities[0],
           genres: genreProbabilities.slice(0, 5),
@@ -120,7 +138,8 @@ class NeuralAudioClassifier {
             danceability: Math.round(moodScores[2] * 100),
             acousticness: Math.round(moodScores[3] * 100)
           },
-          engine: "SonixAudioNet (ONNX Web)"
+          instruments: instruments,
+          engine: "SonixAudioNet-v2 (ONNX Web)"
         };
       } catch (e) {
         console.warn("Inference execution fallback:", e);
@@ -193,8 +212,23 @@ class NeuralAudioClassifier {
         danceability: (bpm >= 115 && bpm <= 132) ? 89 : 52,
         acousticness: isAcoustic ? 85 : 18
       },
+      instruments: this.heuristicInstruments(top),
       engine: "Acoustic DSP Analyzer"
     };
+  }
+
+  heuristicInstruments(topGenre) {
+    const list = [
+      { name: "Synthesizer / Arp", probability: topGenre.includes("Dance") || topGenre.includes("Synth") ? 96 : 35 },
+      { name: "Drums / Percussion", probability: topGenre.includes("Dance") || topGenre.includes("Rock") || topGenre.includes("Hip") ? 94 : 45 },
+      { name: "Bass / 808 Sub", probability: topGenre.includes("Hip") || topGenre.includes("Dance") || topGenre.includes("Synth") ? 92 : 50 },
+      { name: "Vocals / Voice", probability: topGenre.includes("Pop") || topGenre.includes("Hip") || topGenre.includes("Rock") ? 88 : 25 },
+      { name: "Electric Guitar", probability: topGenre.includes("Metal") || topGenre.includes("Rock") ? 95 : 18 },
+      { name: "Acoustic Guitar", probability: topGenre.includes("Acoustic") || topGenre.includes("Folk") ? 92 : 20 },
+      { name: "Piano / Keys", probability: topGenre.includes("Classical") || topGenre.includes("Jazz") ? 90 : 38 },
+      { name: "Brass & Strings", probability: topGenre.includes("Classical") || topGenre.includes("Jazz") ? 94 : 22 }
+    ];
+    return list.map(item => ({ ...item, detected: item.probability >= 50 })).sort((a, b) => b.probability - a.probability);
   }
 }
 

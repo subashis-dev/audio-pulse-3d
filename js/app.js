@@ -109,6 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Draw Waveform
       drawWaveform(analysis.waveformPeaks);
 
+      // Render Song Structure Segmentation Timeline
+      renderSongStructure(analysis.segments, analysis.duration);
+
       // Run Neural Spectrogram AI Classification
       const aiResults = await window.SonixClassifier.classify(window.SonixDsp.audioBuffer, analysis);
       currentAiResults = aiResults;
@@ -155,6 +158,49 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('val-valence').textContent = `${ai.mood.valence}%`;
     document.getElementById('val-dance').textContent = `${ai.mood.danceability}%`;
     document.getElementById('val-acoustic').textContent = `${ai.mood.acousticness}%`;
+
+    // Populate Multi-Instrument Neural Recognition
+    const instContainer = document.getElementById('instruments-container');
+    if (instContainer && ai.instruments) {
+      instContainer.innerHTML = '';
+      ai.instruments.forEach(inst => {
+        const row = document.createElement('div');
+        row.className = 'instrument-row';
+        row.innerHTML = `
+          <div class="inst-left">
+            <span class="inst-dot ${inst.detected ? 'active' : ''}"></span>
+            <span>${inst.name}</span>
+          </div>
+          <div class="inst-right">
+            <div class="inst-bar-track">
+              <div class="inst-bar-fill" style="width: ${inst.probability}%;"></div>
+            </div>
+            <span class="inst-pct">${inst.probability}%</span>
+          </div>
+        `;
+        instContainer.appendChild(row);
+      });
+    }
+  }
+
+  /* ----------------- Structural Song Segmentation Timeline ----------------- */
+  const structureTimeline = document.getElementById('structure-timeline');
+  function renderSongStructure(segments, duration) {
+    if (!structureTimeline || !segments || !segments.length) return;
+    structureTimeline.innerHTML = '';
+    segments.forEach((seg, idx) => {
+      const chip = document.createElement('button');
+      chip.className = 'segment-chip';
+      chip.dataset.start = seg.start;
+      chip.dataset.end = seg.end;
+      chip.dataset.idx = idx;
+      chip.title = `Jump to ${seg.name} (${formatTime(seg.start)})`;
+      chip.innerHTML = `<span>${seg.name} • ${formatTime(seg.start)}</span>`;
+      chip.addEventListener('click', () => {
+        window.SonixDsp.seek(seg.start);
+      });
+      structureTimeline.appendChild(chip);
+    });
   }
 
   /* ----------------- Waveform Canvas ----------------- */
@@ -244,6 +290,20 @@ document.addEventListener('DOMContentLoaded', () => {
       currentTimeEl.textContent = formatTime(curTime);
       const progressPercent = (curTime / duration) * 100;
       waveformProgress.style.width = `${progressPercent}%`;
+
+      // Highlight active structural segment
+      if (structureTimeline) {
+        const chips = structureTimeline.querySelectorAll('.segment-chip');
+        chips.forEach(chip => {
+          const st = parseFloat(chip.dataset.start);
+          const en = parseFloat(chip.dataset.end);
+          if (curTime >= st && curTime < en) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+      }
     }
 
     if (window.SonixDsp.isPlaying) {
@@ -467,6 +527,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const topProb = ai.topGenre.probability;
       const secondaryGenres = ai.genres.slice(1, 4).map(g => `${g.genre} (${g.probability}%)`).join(", ");
       
+      const detectedInsts = ai.instruments ? ai.instruments.filter(i => i.detected).map(i => `${i.name} (${i.probability}%)`).join(", ") : "None detected";
+      const allInstsList = ai.instruments ? ai.instruments.map(i => `  • ${i.name.padEnd(22)}: ${i.probability}% [${i.detected ? 'CONFIRMED' : 'Subtle/Absent'}]`).join("\n") : "  None";
+
       aiSection = `
 ================================================================================
 2. NEURAL SPECTROGRAM AI & PSYCHOACOUSTIC ATTRIBUTES
@@ -477,6 +540,21 @@ document.addEventListener('DOMContentLoaded', () => {
 • Valence (Positivity):   ${ai.mood.valence}% (Emotional optimism vs dark melancholia)
 • Danceability Index:     ${ai.mood.danceability}% (Rhythmic stability & regularity)
 • Acoustic Purity:        ${ai.mood.acousticness}% (${ai.mood.acousticness > 50 ? "Organic/acoustic instrumentation" : "Synthesized/electronic production"})
+
+Multi-Instrument Neural Detection:
+• Primary Instruments Active: ${detectedInsts || "Synthesized textures"}
+${allInstsList}
+`;
+    }
+
+    let structureSection = "";
+    if (analysis.segments && analysis.segments.length) {
+      const segList = analysis.segments.map(s => `  • [${formatTime(s.start)} - ${formatTime(s.end)}] : ${s.name}`).join("\n");
+      structureSection = `
+================================================================================
+5. STRUCTURAL SONG PROGRESSION & ARRANGEMENT
+================================================================================
+${segList}
 `;
     }
 
@@ -520,14 +598,14 @@ DJ & Mixing Compatibility:
 
 Rhythmic Analysis:
 ${tempoDescription}
-
+${structureSection}
 ================================================================================
-5. DYNAMIC MASTERING & LOUDNESS EVALUATION
+6. DYNAMIC MASTERING & LOUDNESS EVALUATION
 ================================================================================
 ${dynamicsNarrative}
 
 ================================================================================
-6. SPECTRAL BALANCE & FREQUENCY TOPOGRAPHY
+7. SPECTRAL BALANCE & FREQUENCY TOPOGRAPHY
 ================================================================================
 • Sub-Bass (20 - 60 Hz)     : Low-end weight and visceral sub-woofer impact.
 • Bass (60 - 250 Hz)        : Kick drum punch and foundational bassline weight.
@@ -538,7 +616,7 @@ ${dynamicsNarrative}
 • Brilliance (6 - 20 kHz)   : Airy sheen, cymbal sizzle, and high-frequency sparkle.
 
 ================================================================================
-7. PRODUCER & CURATOR VERDICT
+8. PRODUCER & CURATOR VERDICT
 ================================================================================
 "${title}" is an evocative piece possessing a well-defined ${bpm} BPM cadence anchored in ${key} (${camelot}). Its balance of dynamic headroom (${analysis.dynamicRange} dB) and harmonic resonance delivers an engaging acoustic profile suitable for high-fidelity playback, DJ performance sets, and immersive 3D spatial visualization.
 

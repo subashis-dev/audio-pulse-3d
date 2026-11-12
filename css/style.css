@@ -187,7 +187,7 @@ body {
   flex: 1;
   display: grid;
   grid-template-columns: 340px 1fr 340px;
-  height: calc(100vh - 58px - 95px);
+  height: calc(100vh - 58px - 116px);
   position: relative;
   overflow: hidden;
 }
@@ -491,14 +491,124 @@ body {
 
 /* ----------------- Bottom Master Audio Bar ----------------- */
 .bottom-player-bar {
-  height: 95px;
+  height: 116px;
   background: rgba(7, 9, 19, 0.95);
   backdrop-filter: blur(16px);
   border-top: 1px solid var(--bg-panel-border);
   display: flex;
   flex-direction: column;
-  padding: 10px 24px;
+  padding: 8px 24px;
   z-index: 100;
+}
+
+/* Song Structure Timeline Bar */
+.structure-timeline {
+  display: flex;
+  gap: 6px;
+  margin-left: 59px;
+  margin-right: 59px;
+  margin-bottom: 4px;
+  height: 18px;
+  align-items: center;
+}
+
+.segment-chip {
+  flex: 1;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+  padding: 1px 4px;
+}
+
+.segment-chip:hover {
+  color: #fff;
+  background: rgba(0, 243, 255, 0.15);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+}
+
+.segment-chip.active {
+  color: #000;
+  font-weight: 700;
+  background: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+}
+
+/* Multi-Instrument Neural Recognition */
+.instruments-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.instrument-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.inst-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.70rem;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+.inst-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.inst-dot.active {
+  background: var(--neon-green);
+  box-shadow: 0 0 6px var(--neon-green);
+}
+
+.inst-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 90px;
+}
+
+.inst-bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.inst-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.inst-pct {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  width: 28px;
+  text-align: right;
 }
 
 /* Waveform Timeline */
