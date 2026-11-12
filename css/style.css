@@ -1,0 +1,645 @@
+/* ==========================================================================
+   SONIX3D - Cyberpunk Audio Intelligence & 3D WebGL Dashboard
+   ========================================================================== */
+
+:root {
+  --bg-deep: #070913;
+  --bg-panel: rgba(13, 17, 30, 0.72);
+  --bg-panel-border: rgba(0, 243, 255, 0.22);
+  --bg-panel-hover: rgba(18, 25, 45, 0.88);
+  
+  --neon-cyan: #00f3ff;
+  --neon-pink: #ff007f;
+  --neon-green: #00ff66;
+  --neon-purple: #bd00ff;
+  --neon-gold: #ffaa00;
+
+  --text-main: #f0f4fc;
+  --text-muted: #8899b5;
+  --text-highlight: #00f3ff;
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --glow-cyan: 0 0 16px rgba(0, 243, 255, 0.35);
+  --glow-pink: 0 0 16px rgba(255, 0, 127, 0.35);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----------------- Top Header Bar ----------------- */
+.top-header {
+  height: 58px;
+  background: rgba(7, 9, 19, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bg-panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--glow-cyan);
+}
+
+.logo-icon svg {
+  fill: #fff;
+  width: 18px;
+  height: 18px;
+}
+
+.logo-title {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 1.5px;
+  background: linear-gradient(90deg, #ffffff, var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(0, 243, 255, 0.12);
+  color: var(--neon-cyan);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.header-center-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-pill-group {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.pill-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+  color: var(--text-main);
+}
+
+.pill-btn.active {
+  background: var(--neon-cyan);
+  color: #000;
+  font-weight: 600;
+  box-shadow: var(--glow-cyan);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 243, 255, 0.08);
+  border: 1px solid rgba(0, 243, 255, 0.25);
+  color: var(--neon-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: var(--glow-cyan);
+}
+
+.action-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* ----------------- Main Workspace Layout ----------------- */
+.workspace-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 340px 1fr 340px;
+  height: calc(100vh - 58px - 95px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ----------------- 3D WebGL Viewport (Center) ----------------- */
+.center-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, rgba(14, 20, 38, 0.6) 0%, var(--bg-deep) 100%);
+}
+
+#viewport-3d {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+#viewport-3d:active {
+  cursor: grabbing;
+}
+
+.viewport-overlay-hint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(7, 9, 19, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+/* 7-Band Equalizer Overlay in 3D Viewport */
+.realtime-bands-overlay {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  background: rgba(7, 9, 19, 0.65);
+  backdrop-filter: blur(12px);
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.eq-band-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 32px;
+}
+
+.eq-band-track {
+  width: 8px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.eq-band-fill {
+  width: 100%;
+  height: 5%;
+  background: linear-gradient(180deg, var(--neon-pink), var(--neon-cyan));
+  border-radius: 4px;
+  transition: height 0.05s ease-out;
+}
+
+.eq-band-label {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* ----------------- Sidebars (Left & Right HUD) ----------------- */
+.sidebar-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(14px);
+  border-right: 1px solid var(--bg-panel-border);
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 10;
+}
+
+.sidebar-panel.right-panel {
+  border-right: none;
+  border-left: 1px solid var(--bg-panel-border);
+}
+
+.hud-card {
+  background: rgba(18, 23, 40, 0.65);
+  border: 1px solid rgba(0, 243, 255, 0.16);
+  border-radius: 10px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--neon-cyan);
+}
+
+.card-title {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title span.highlight {
+  color: var(--neon-cyan);
+}
+
+/* Telemetry Grid */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.telemetry-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.telemetry-item.full-width {
+  grid-column: span 2;
+}
+
+.telem-label {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.telem-value {
+  font-size: 1.15rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin-top: 2px;
+}
+
+.telem-value.accent {
+  color: var(--neon-pink);
+}
+
+/* Upload Dropzone */
+.drop-zone {
+  border: 2px dashed rgba(0, 243, 255, 0.35);
+  border-radius: 8px;
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(0, 243, 255, 0.02);
+  transition: all 0.2s ease;
+}
+
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 243, 255, 0.08);
+  box-shadow: inset var(--glow-cyan);
+}
+
+.drop-zone-icon {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 8px;
+  fill: var(--neon-cyan);
+}
+
+.drop-zone-text {
+  font-size: 0.78rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.drop-zone-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Demo Tracks */
+.demo-tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.demo-track-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.demo-track-btn:hover {
+  background: rgba(0, 243, 255, 0.12);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+/* AI Classification Breakdown */
+.genre-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.genre-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.genre-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+.bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Mood Radar / Attribute Bars */
+.mood-attributes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mood-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mood-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.mood-fill {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+}
+
+/* ----------------- Bottom Master Audio Bar ----------------- */
+.bottom-player-bar {
+  height: 95px;
+  background: rgba(7, 9, 19, 0.95);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--bg-panel-border);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 24px;
+  z-index: 100;
+}
+
+/* Waveform Timeline */
+.waveform-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.time-readout {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  width: 45px;
+  text-align: center;
+}
+
+#waveform-container {
+  flex: 1;
+  height: 38px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#waveform-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#waveform-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: rgba(0, 243, 255, 0.22);
+  border-right: 2px solid var(--neon-cyan);
+  box-shadow: 2px 0 10px var(--neon-cyan);
+  pointer-events: none;
+}
+
+/* Transport Controls & Metadata */
+.player-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.track-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
+
+.track-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+.track-artist {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.transport-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.play-pause-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-cyan), #00a2ff);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--glow-cyan);
+  transition: transform 0.15s ease;
+}
+
+.play-pause-btn:hover {
+  transform: scale(1.08);
+}
+
+.play-pause-btn:active {
+  transform: scale(0.95);
+}
+
+.play-pause-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: #000;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.volume-control svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-muted);
+}
+
+.volume-slider {
+  -webkit-appearance: none;
+  width: 90px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  cursor: pointer;
+  box-shadow: var(--glow-cyan);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 243, 255, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 243, 255, 0.4);
+}

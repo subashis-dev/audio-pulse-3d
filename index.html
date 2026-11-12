@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SONIX3D — Offline 3D Audio Intelligence & Spectrogram Laboratory</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Three.js (WebGL 3D Engine) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- ONNX Runtime Web (100% Client-side Deep Learning) -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <div class="logo-group">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      </div>
+      <span class="logo-title">SONIX3D</span>
+      <span class="logo-badge">DSP & NEURAL AI</span>
+    </div>
+
+    <!-- 3D Mode & Color Theme Switchers -->
+    <div class="header-center-controls">
+      <div class="control-pill-group">
+        <button class="pill-btn mode-btn active" data-mode="nebula">🌌 Nebula</button>
+        <button class="pill-btn mode-btn" data-mode="terrain">⛰️ Spectrogram 3D</button>
+        <button class="pill-btn mode-btn" data-mode="cymatics">🪐 Cymatics</button>
+      </div>
+
+      <div class="control-pill-group">
+        <button class="pill-btn theme-btn active" data-theme="cyber">Cyber</button>
+        <button class="pill-btn theme-btn" data-theme="matrix">Matrix</button>
+        <button class="pill-btn theme-btn" data-theme="violet">Violet</button>
+        <button class="pill-btn theme-btn" data-theme="solar">Solar</button>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="action-btn" id="btn-export" title="Export Analysis Data as JSON">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <span>Export Report</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Three-Column Workspace -->
+  <main class="workspace-grid">
+
+    <!-- LEFT SIDEBAR: Audio Source & Track Telemetry -->
+    <aside class="sidebar-panel left-panel">
+      
+      <!-- Audio Upload Dropzone -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Audio Ingestion</span>
+          <span class="highlight">100% OFFLINE</span>
+        </div>
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('audio-upload').click()">
+          <svg class="drop-zone-icon" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+          <div class="drop-zone-text">Drop Audio File Here</div>
+          <div class="drop-zone-sub">MP3, WAV, FLAC, OGG, M4A</div>
+          <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
+        </div>
+      </div>
+
+      <!-- Quick Demo Tracks -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Preset Demo Tracks</span>
+          <span class="highlight">SYNTHESIZER</span>
+        </div>
+        <div class="demo-tracks-list">
+          <button class="demo-track-btn" data-track="synthwave">
+            <span>⚡ Cyber Neon Overdrive</span>
+            <span>128 BPM</span>
+          </button>
+          <button class="demo-track-btn" data-track="groove">
+            <span>🔥 Sub-Bass Urban Groove</span>
+            <span>95 BPM</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- DSP Telemetry HUD -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Track Telemetry</span>
+          <span class="highlight">DSP ENGINE</span>
+        </div>
+        <div class="telemetry-grid">
+          <div class="telemetry-item">
+            <div class="telem-label">TEMPO (BPM)</div>
+            <div class="telem-value" id="hud-bpm">--</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telem-label">MUSICAL KEY</div>
+            <div class="telem-value accent" id="hud-key">--</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telem-label">CAMELOT CODE</div>
+            <div class="telem-value" id="hud-camelot">--</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telem-label">DYNAMIC RANGE</div>
+            <div class="telem-value" id="hud-dynamic-range">--</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telem-label">PEAK LEVEL</div>
+            <div class="telem-value" id="hud-peak">--</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telem-label">SAMPLE RATE</div>
+            <div class="telem-value" id="hud-sample-rate">--</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- CENTER: Three.js Interactive 3D Viewport -->
+    <section class="center-viewport">
+      <div id="viewport-3d"></div>
+      
+      <div class="viewport-overlay-hint">
+        🖱️ Drag to rotate 3D camera • Scroll to zoom • Audio-reactive physics
+      </div>
+
+      <!-- Live 7-Band Equalizer Overlay -->
+      <div class="realtime-bands-overlay">
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-sub-bass"></div></div>
+          <span class="eq-band-label">SUB</span>
+        </div>
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-bass"></div></div>
+          <span class="eq-band-label">BASS</span>
+        </div>
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-low-mid"></div></div>
+          <span class="eq-band-label">L-MID</span>
+        </div>
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-mid"></div></div>
+          <span class="eq-band-label">MID</span>
+        </div>
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-high-mid"></div></div>
+          <span class="eq-band-label">H-MID</span>
+        </div>
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-presence"></div></div>
+          <span class="eq-band-label">PRES</span>
+        </div>
+        <div class="eq-band-unit">
+          <div class="eq-band-track"><div class="eq-band-fill" id="band-brilliance"></div></div>
+          <span class="eq-band-label">BRIL</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDEBAR: Neural Spectrogram AI Classification -->
+    <aside class="sidebar-panel right-panel">
+      
+      <!-- Neural Genre Classification Card -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Neural Genre Classification</span>
+          <span class="highlight">PYTORCH / ONNX</span>
+        </div>
+        
+        <div style="margin-bottom: 12px;">
+          <div class="telem-label">PRIMARY CLASSIFICATION</div>
+          <div class="telem-value" id="top-genre-badge" style="font-size: 1rem;">Analyzing...</div>
+        </div>
+
+        <div class="genre-breakdown-list" id="genre-breakdown-list">
+          <!-- Filled dynamically by neuralClassifier.js -->
+        </div>
+      </div>
+
+      <!-- Acoustic Mood & Vibe Radar Metrics -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Acoustic Mood Matrix</span>
+          <span class="highlight">VALENCE / ENERGY</span>
+        </div>
+        <div class="mood-attributes-list">
+          <div class="mood-item">
+            <div class="mood-header">
+              <span>Energy Intensity</span>
+              <span id="val-energy">--%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill mood-fill" id="mood-energy" style="width: 0%;"></div></div>
+          </div>
+
+          <div class="mood-item">
+            <div class="mood-header">
+              <span>Valence / Positivity</span>
+              <span id="val-valence">--%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill mood-fill" id="mood-valence" style="width: 0%;"></div></div>
+          </div>
+
+          <div class="mood-item">
+            <div class="mood-header">
+              <span>Danceability Factor</span>
+              <span id="val-dance">--%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill mood-fill" id="mood-dance" style="width: 0%;"></div></div>
+          </div>
+
+          <div class="mood-item">
+            <div class="mood-header">
+              <span>Acoustic Purity</span>
+              <span id="val-acoustic">--%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill mood-fill" id="mood-acoustic" style="width: 0%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edge Computing Specs -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Edge Security & Privacy</span>
+          <span class="highlight">LOCAL</span>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.5;">
+          🛡️ Audio files never leave your device. All STFT math, Krumhansl harmonic profiles, and neural inference run locally in WebAssembly & WebGL.
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Bottom Master Audio Transport Bar -->
+  <footer class="bottom-player-bar">
+    
+    <!-- Interactive Waveform Timeline -->
+    <div class="waveform-section">
+      <span class="time-readout" id="time-current">0:00</span>
+      <div id="waveform-container">
+        <canvas id="waveform-canvas"></canvas>
+        <div id="waveform-progress"></div>
+      </div>
+      <span class="time-readout" id="time-total">0:00</span>
+    </div>
+
+    <!-- Transport Controls & Meta -->
+    <div class="player-controls-row">
+      <div class="track-meta">
+        <div class="track-title" id="track-title">Initializing Sonix3D...</div>
+        <div class="track-artist" id="track-artist">Select a demo or drop an audio file</div>
+      </div>
+
+      <div class="transport-buttons">
+        <button class="play-pause-btn" id="btn-play" title="Play">
+          <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </div>
+
+      <div class="volume-control">
+        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="0.85">
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- App Core Scripts -->
+  <script src="js/audioDsp.js"></script>
+  <script src="js/neuralClassifier.js"></script>
+  <script src="js/visualizer3d.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
