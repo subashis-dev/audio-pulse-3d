@@ -93,7 +93,8 @@ class StemSeparatorEngine {
     const othL = this.stems.other.getChannelData(0);
     const othR = this.stems.other.getChannelData(numChannels > 1 ? 1 : 0);
 
-    if (onProgress) onProgress(35, "Extracting Sub-Bass acoustic foundation (< 200 Hz)...");
+    if (onProgress) onProgress(35, "Extracting Sub-Bass foundation (< 200 Hz)...");
+    await new Promise(r => setTimeout(r, 0));
 
     // 1. Low-Pass Biquad Filter simulation for BASS (< 200 Hz)
     // 2-pole butterworth lowpass at 220Hz
@@ -126,6 +127,7 @@ class StemSeparatorEngine {
     }
 
     if (onProgress) onProgress(55, "Separating percussive transients (Drums)...");
+    await new Promise(r => setTimeout(r, 0));
 
     // 2. High-pass transient novelty for DRUMS (Snare crack, Kick click, Cymbals)
     const step = 4;
@@ -141,6 +143,7 @@ class StemSeparatorEngine {
     }
 
     if (onProgress) onProgress(75, "Extracting Center-Channel vocal formants (Vocals)...");
+    await new Promise(r => setTimeout(r, 0));
 
     // 3. Center-Pan & Formant Bandpass for VOCALS (300 Hz - 3500 Hz)
     for (let i = 0; i < length; i++) {

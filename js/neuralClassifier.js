@@ -87,10 +87,12 @@ class NeuralAudioClassifier {
   async classify(audioBuffer, dspMetrics = null) {
     const timeSteps = 128;
     const freqBins = 128;
+    await new Promise(r => setTimeout(r, 0));
     const inputMatrix = this.extractSpectrogramMatrix(audioBuffer, freqBins, timeSteps);
 
     if (this.isReady && this.session && window.ort) {
       try {
+        await new Promise(r => setTimeout(r, 0));
         const inputTensor = new ort.Tensor('float32', inputMatrix, [1, 1, freqBins, timeSteps]);
         const results = await this.session.run({ spectrogram: inputTensor });
 
