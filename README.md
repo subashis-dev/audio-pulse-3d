@@ -75,20 +75,34 @@
 
 ## 🚀 Running Locally
 
-To run AudioPulse 3D on your local machine:
+To run AudioPulse 3D locally on your machine:
 
-```powershell
-# Navigate to the project directory
-cd C:\Users\subas\Claude\sonix3d
+```bash
+# 1. Clone the repository
+git clone https://github.com/subashis-dev/audio-pulse-3d.git
+cd audio-pulse-3d
 
-# Start local HTTP server
+# 2. Start any standard local HTTP server
 python -m http.server 8090
+# or: npx serve .
 ```
 
 Open your browser and navigate to:
 ```
 http://localhost:8090
 ```
+
+---
+
+## 📊 Retraining the Neural Model (Optional)
+
+To retrain the neural model on your own GPU:
+
+```bash
+cd train
+python train.py
+```
+This trains the multi-head architecture on CUDA and automatically exports the updated ONNX model to `models/`.
 
 ---
 

@@ -250,8 +250,11 @@ def main():
     model.eval()
     dummy_input = torch.randn(1, 1, 128, 128, device=device)
     
-    os.makedirs(r"C:\Users\subas\Claude\sonix3d\models", exist_ok=True)
-    onnx_path = r"C:\Users\subas\Claude\sonix3d\models\sonix_classifier.onnx"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.abspath(os.path.join(current_dir, ".."))
+    models_dir = os.path.join(project_dir, "models")
+    os.makedirs(models_dir, exist_ok=True)
+    onnx_path = os.path.join(models_dir, "sonix_classifier.onnx")
     
     torch.onnx.export(
         model,
@@ -282,7 +285,7 @@ def main():
         "fft_size": 2048,
         "mel_bins": 128
     }
-    meta_path = r"C:\Users\subas\Claude\sonix3d\models\classes.json"
+    meta_path = os.path.join(models_dir, "classes.json")
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
     print(f"✅ Metadata saved to: {meta_path}")
