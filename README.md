@@ -15,7 +15,9 @@
 * **Real-time 60 FPS 3D WebGL Visualization:** Three dynamic reactive modes (Orbital Particle Nebula, Flowing Spectrogram Mountain, and Cymatics Resonance Sphere).
 * **Mathematical Audio DSP Engine:** Extracts exact BPM tempo, musical key & scale (via 12-dimensional Chroma Pitch Class Profiles & Krumhansl-Schmuckler harmonic correlation), Camelot Wheel mixing codes, dynamic range, RMS loudness, and peak dBFS.
 * **Deep Neural Spectrogram AI:** A custom 650K-parameter PyTorch CNN (`SonixAudioNet`) trained on an RTX 3060 and exported to ONNX Web for real-time offline genre classification and mood/energy analysis.
-* **Zero Cloud Dependency:** Runs 100% locally in-browser via Web Audio API, WebGL, and WebAssembly. No API keys, no server costs, no telemetry tracking.
+* **Dual Intelligence Export:**
+  * **Export JSON:** Full raw acoustic and neural telemetry object for programmatic analysis.
+  * **Export Story Report (.txt):** In-depth natural language acoustic intelligence dossier featuring harmonic mixing guidance, tempo cadence evaluation, dynamic mastering analysis, and curator recommendations.
 
 ---
 
