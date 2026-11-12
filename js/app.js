@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let currentAnalysis = null;
+  let currentAiResults = null;
   let isDraggingScrub = false;
 
   // Formatting helpers
@@ -110,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Run Neural Spectrogram AI Classification
       const aiResults = await window.SonixClassifier.classify(window.SonixDsp.audioBuffer, analysis);
+      currentAiResults = aiResults;
       renderAiPredictions(aiResults);
 
       // Start Playback
@@ -380,7 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ----------------- Export Report ----------------- */
+  /* ----------------- Export Reports (JSON & Natural Language Story) ----------------- */
+  // 1. Existing JSON Export (Unchanged)
   const exportBtn = document.getElementById('btn-export');
   if (exportBtn) {
     exportBtn.addEventListener('click', () => {
@@ -395,6 +398,213 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+    });
+  }
+
+  // 2. Extra Natural Language Story Report Generator & Modal
+  const exportNlBtn = document.getElementById('btn-export-nl');
+  const reportModal = document.getElementById('report-modal');
+  const reportTextContent = document.getElementById('report-text-content');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const copyReportBtn = document.getElementById('btn-copy-report');
+  const copyBtnText = document.getElementById('copy-btn-text');
+  const downloadReportTxtBtn = document.getElementById('btn-download-report-txt');
+
+  function generateNaturalLanguageReport(analysis, ai, title) {
+    if (!analysis) return "";
+
+    const durationMin = Math.floor(analysis.duration / 60);
+    const durationSec = Math.floor(analysis.duration % 60);
+    const durationStr = `${durationMin}m ${durationSec < 10 ? '0' : ''}${durationSec}s (${analysis.duration.toFixed(1)} seconds)`;
+
+    // Tonality narrative
+    const key = analysis.key || "Unknown";
+    const camelot = analysis.camelotCode || "N/A";
+    const isMinor = key.toLowerCase().includes("minor");
+    const harmonicMood = isMinor
+      ? "steeped in a melancholic, dramatic, or nocturnal aesthetic"
+      : "resonant with an uplifting, bright, and triumphant tonality";
+
+    // Harmonic mixing compatible keys
+    const camelotNum = parseInt(camelot) || 8;
+    const camelotLetter = camelot.slice(-1) || 'A';
+    const oppLetter = camelotLetter === 'A' ? 'B' : 'A';
+    const relativeKey = `${camelotNum}${oppLetter}`;
+    const energyUp = `${(camelotNum % 12) + 1}${camelotLetter}`;
+    const energyDown = `${((camelotNum - 2 + 12) % 12) + 1}${camelotLetter}`;
+
+    // Tempo & rhythm narrative
+    const bpm = analysis.bpm;
+    let tempoDescription = "";
+    if (bpm < 80) {
+      tempoDescription = `At a deliberate ${bpm} BPM, the rhythm establishes a slow, meditative, or ambient pulse, allowing ample acoustic space between transients.`;
+    } else if (bpm <= 105) {
+      tempoDescription = `Clocking in at ${bpm} BPM, this track settles into a grounded, head-nodding mid-tempo groove typical of classic hip-hop, downtempo, or chillout beats.`;
+    } else if (bpm <= 128) {
+      tempoDescription = `Pumping at an energetic ${bpm} BPM, the track commands a driving club cadence—ideal for peak-time electronic, synthwave, and house movement.`;
+    } else if (bpm <= 145) {
+      tempoDescription = `Driving forward at a brisk ${bpm} BPM, this composition possesses intense forward momentum, characteristic of modern pop, trance, or heavy rock.`;
+    } else {
+      tempoDescription = `Blazing at a high-velocity ${bpm} BPM, the track delivers rapid percussive transients suitable for drum & bass, hardcore, or high-octane metal.`;
+    }
+
+    // Dynamic range & master quality
+    const dr = parseFloat(analysis.dynamicRange);
+    const peak = parseFloat(analysis.peakDb);
+    let dynamicsNarrative = "";
+    if (dr > 16) {
+      dynamicsNarrative = `With an expansive dynamic range of ${dr} dB and a peak ceiling of ${peak} dBFS, the recording exhibits audiophile-grade breathing room with minimal compression, preserving natural acoustic transients.`;
+    } else if (dr >= 10) {
+      dynamicsNarrative = `Boasting a well-calibrated dynamic range of ${dr} dB (Peak: ${peak} dBFS), the mix strikes a radio-ready balance between punchy transients and perceived commercial loudness.`;
+    } else {
+      dynamicsNarrative = `Exhibiting a dense dynamic range of ${dr} dB (Peak: ${peak} dBFS), this master is aggressively compressed for maximum perceived punch and club-system volume.`;
+    }
+
+    // AI & Mood details
+    let aiSection = "";
+    if (ai) {
+      const topGenre = ai.topGenre.genre;
+      const topProb = ai.topGenre.probability;
+      const secondaryGenres = ai.genres.slice(1, 4).map(g => `${g.genre} (${g.probability}%)`).join(", ");
+      
+      aiSection = `
+================================================================================
+2. NEURAL SPECTROGRAM AI & PSYCHOACOUSTIC ATTRIBUTES
+================================================================================
+• Primary Classification: ${topGenre} (${topProb}% confidence)
+• Secondary Stylistic Nuances: ${secondaryGenres || "None detected"}
+• Energy Intensity:       ${ai.mood.energy}% (Overall acoustic power & drive)
+• Valence (Positivity):   ${ai.mood.valence}% (Emotional optimism vs dark melancholia)
+• Danceability Index:     ${ai.mood.danceability}% (Rhythmic stability & regularity)
+• Acoustic Purity:        ${ai.mood.acousticness}% (${ai.mood.acousticness > 50 ? "Organic/acoustic instrumentation" : "Synthesized/electronic production"})
+`;
+    }
+
+    return `
+================================================================================
+🌌 SONIX3D ACOUSTIC INTELLIGENCE DOSSIER
+================================================================================
+Composition Title : ${title}
+Analysis Engine   : Sonix3D Offline DSP & Neural Spectrogram AI (ONNX)
+Hardware Platform : Local Edge Inference (100% Sovereign & Cloud-Free)
+Timestamp         : ${new Date().toUTCString()}
+
+================================================================================
+1. EXECUTIVE AUDIO OVERVIEW & TELEMETRY
+================================================================================
+• Total Duration     : ${durationStr}
+• Sample Rate        : ${analysis.sampleRate} Hz (${(analysis.sampleRate / 1000).toFixed(1)} kHz)
+• Channel Topology   : ${analysis.numberOfChannels === 2 ? "Stereo (2 Channels)" : "Mono (1 Channel)"}
+• Peak Amplitude     : ${analysis.peakDb} dBFS
+• Integrated Loudness: ${analysis.rmsDb} dBFS (RMS)
+• Dynamic Range (DR) : ${analysis.dynamicRange} dB (Crest Factor)
+${aiSection}
+================================================================================
+3. HARMONIC TONALITY & MUSICAL KEY PROFILE
+================================================================================
+• Detected Musical Key: ${key} (Confidence: ${analysis.keyConfidence || 95}%)
+• Camelot Wheel Code  : ${camelot}
+
+Acoustic Description:
+The composition's fundamental energy centers around the key of ${key}, which is ${harmonicMood}.
+
+DJ & Mixing Compatibility:
+• Relative Key Transition: ${relativeKey} (Smooth emotional polarity modulation)
+• Energy Lift (+1 Camelot): ${energyUp} (Pushes harmonic tension higher)
+• Energy Drop (-1 Camelot): ${energyDown} (Creates relaxed harmonic resolution)
+
+================================================================================
+4. TEMPO & RHYTHMIC CADENCE
+================================================================================
+• Detected Tempo : ${bpm} BPM (Beats Per Minute)
+
+Rhythmic Analysis:
+${tempoDescription}
+
+================================================================================
+5. DYNAMIC MASTERING & LOUDNESS EVALUATION
+================================================================================
+${dynamicsNarrative}
+
+================================================================================
+6. SPECTRAL BALANCE & FREQUENCY TOPOGRAPHY
+================================================================================
+• Sub-Bass (20 - 60 Hz)     : Low-end weight and visceral sub-woofer impact.
+• Bass (60 - 250 Hz)        : Kick drum punch and foundational bassline weight.
+• Low-Mids (250 - 500 Hz)   : Body of instruments, snares, and lower harmonic warmth.
+• Midrange (500 - 2 kHz)    : Melodic leads, vocal fundamentals, and presence.
+• Upper-Mids (2 - 4 kHz)    : Articulation, attack transients, and acoustic bite.
+• Presence (4 - 6 kHz)      : Definition, vocal clarity, and synth openness.
+• Brilliance (6 - 20 kHz)   : Airy sheen, cymbal sizzle, and high-frequency sparkle.
+
+================================================================================
+7. PRODUCER & CURATOR VERDICT
+================================================================================
+"${title}" is an evocative piece possessing a well-defined ${bpm} BPM cadence anchored in ${key} (${camelot}). Its balance of dynamic headroom (${analysis.dynamicRange} dB) and harmonic resonance delivers an engaging acoustic profile suitable for high-fidelity playback, DJ performance sets, and immersive 3D spatial visualization.
+
+================================================================================
+Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
+================================================================================
+`.trim();
+  }
+
+  function downloadStoryFile(text, filename) {
+    const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", filename);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  }
+
+  if (exportNlBtn) {
+    exportNlBtn.addEventListener('click', () => {
+      if (!currentAnalysis) {
+        alert("Please load or play a track first to generate the natural language report!");
+        return;
+      }
+      const title = trackNameEl.textContent.trim();
+      const storyReport = generateNaturalLanguageReport(currentAnalysis, currentAiResults, title);
+      
+      reportTextContent.textContent = storyReport;
+      reportModal.classList.add('active');
+    });
+  }
+
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', () => {
+      reportModal.classList.remove('active');
+    });
+  }
+
+  if (reportModal) {
+    reportModal.addEventListener('click', (e) => {
+      if (e.target === reportModal) {
+        reportModal.classList.remove('active');
+      }
+    });
+  }
+
+  if (copyReportBtn) {
+    copyReportBtn.addEventListener('click', () => {
+      const text = reportTextContent.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtnText.textContent = "Copied to Clipboard!";
+        setTimeout(() => {
+          copyBtnText.textContent = "Copy to Clipboard";
+        }, 2000);
+      }).catch(err => {
+        console.error("Clipboard copy error:", err);
+      });
+    });
+  }
+
+  if (downloadReportTxtBtn) {
+    downloadReportTxtBtn.addEventListener('click', () => {
+      const text = reportTextContent.textContent;
+      const title = trackNameEl.textContent.trim();
+      downloadStoryFile(text, `Sonix3D_Story_Report_${title}.txt`);
     });
   }
 

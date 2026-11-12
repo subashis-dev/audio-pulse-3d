@@ -49,7 +49,11 @@
     <div class="header-actions">
       <button class="action-btn" id="btn-export" title="Export Analysis Data as JSON">
         <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-        <span>Export Report</span>
+        <span>Export JSON</span>
+      </button>
+      <button class="action-btn accent-pink" id="btn-export-nl" title="Export Natural Language Audio Intelligence Report">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        <span>Export Story Report (.txt)</span>
       </button>
     </div>
   </header>
@@ -278,6 +282,34 @@
     </div>
 
   </footer>
+
+  <!-- Natural Language Report Modal -->
+  <div class="report-modal-backdrop" id="report-modal">
+    <div class="report-modal-window">
+      <div class="report-modal-header">
+        <div class="report-modal-title">
+          <span>Acoustic Intelligence Dossier</span>
+          <span class="badge">NATURAL LANGUAGE</span>
+        </div>
+        <button class="modal-close-btn" id="modal-close-btn" title="Close">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="report-modal-body">
+        <pre class="report-text-pre" id="report-text-content"></pre>
+      </div>
+      <div class="report-modal-footer">
+        <button class="action-btn" id="btn-copy-report">
+          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          <span id="copy-btn-text">Copy to Clipboard</span>
+        </button>
+        <button class="action-btn accent-pink" id="btn-download-report-txt">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>Download Story (.txt)</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- App Core Scripts -->
   <script src="js/audioDsp.js"></script>

@@ -164,6 +164,18 @@ body {
   box-shadow: var(--glow-cyan);
 }
 
+.action-btn.accent-pink {
+  background: rgba(255, 0, 127, 0.08);
+  border-color: rgba(255, 0, 127, 0.35);
+  color: var(--neon-pink);
+}
+
+.action-btn.accent-pink:hover {
+  background: var(--neon-pink);
+  color: #fff;
+  box-shadow: var(--glow-pink);
+}
+
 .action-btn svg {
   width: 14px;
   height: 14px;
@@ -642,4 +654,113 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 243, 255, 0.4);
+}
+
+/* ----------------- Natural Language Report Modal ----------------- */
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 15, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.report-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.report-modal-window {
+  width: 90%;
+  max-width: 760px;
+  max-height: 85vh;
+  background: #0c1020;
+  border: 1px solid rgba(0, 243, 255, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), var(--glow-cyan);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.report-modal-header {
+  padding: 16px 20px;
+  background: rgba(18, 25, 45, 0.95);
+  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-modal-title {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-modal-title span.badge {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 0, 127, 0.15);
+  color: var(--neon-pink);
+  border: 1px solid rgba(255, 0, 127, 0.4);
+}
+
+.report-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  background: #090c18;
+}
+
+.report-text-pre {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #d1d9e6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.report-modal-footer {
+  padding: 14px 20px;
+  background: rgba(18, 25, 45, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.modal-close-btn:hover {
+  color: #fff;
+}
+
+.modal-close-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
