@@ -47,6 +47,10 @@
     </div>
 
     <div class="header-actions">
+      <button class="action-btn" id="btn-open-midi" style="background: rgba(189, 0, 255, 0.12); border-color: rgba(189, 0, 255, 0.4); color: var(--neon-purple);" title="Audio-to-MIDI Neural Transcriber & Piano Roll">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        <span>🎹 MIDI Transcriber</span>
+      </button>
       <button class="action-btn" id="btn-export" title="Export Analysis Data as JSON">
         <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
         <span>Export JSON</span>
@@ -396,9 +400,70 @@
     </div>
   </div>
 
+  <!-- Audio-to-MIDI Neural Transcriber Modal -->
+  <div class="report-modal-backdrop" id="midi-modal">
+    <div class="report-modal-window" style="max-width: 860px;">
+      <div class="report-modal-header">
+        <div class="report-modal-title">
+          <span>Neural Audio-to-MIDI Transcriber</span>
+          <span class="badge" style="background: rgba(189, 0, 255, 0.2); color: var(--neon-purple); border-color: var(--neon-purple);">PIANO ROLL & .MID</span>
+        </div>
+        <button class="modal-close-btn" id="midi-modal-close-btn" title="Close">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+
+      <div class="report-modal-body" style="padding: 16px;">
+        <!-- Transcription Control Strip -->
+        <div class="midi-controls-strip">
+          <div class="midi-source-select-group">
+            <label class="telem-label" style="margin-right: 8px;">SOURCE AUDIO:</label>
+            <select id="midi-source-select" class="midi-select-dropdown">
+              <option value="full">Master Full Mix</option>
+              <option value="melody">Melody / Synths Stem</option>
+              <option value="bass">Bassline Stem</option>
+              <option value="vocals">Vocals Stem</option>
+            </select>
+          </div>
+
+          <button class="action-btn" id="btn-run-midi-transcribe" style="background: rgba(189, 0, 255, 0.2); border-color: var(--neon-purple); color: #fff;">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            <span id="btn-midi-transcribe-text">Run Neural Pitch Tracking</span>
+          </button>
+        </div>
+
+        <!-- Glowing Cyberpunk Piano Roll Viewport -->
+        <div class="piano-roll-container">
+          <canvas id="piano-roll-canvas" width="820" height="260"></canvas>
+          <div class="piano-roll-empty-hint" id="piano-roll-hint">
+            Click "Run Neural Pitch Tracking" to transcribe notes into this Piano Roll
+          </div>
+        </div>
+
+        <!-- Note Stats Strip -->
+        <div class="midi-stats-strip">
+          <div class="midi-stat-chip">Detected Notes: <span id="midi-note-count" style="color: var(--neon-cyan); font-weight: 700;">0</span></div>
+          <div class="midi-stat-chip">Pitch Range: <span id="midi-pitch-range" style="color: var(--neon-purple); font-weight: 700;">--</span></div>
+          <div class="midi-stat-chip">Format: <span style="color: var(--neon-green); font-weight: 700;">Standard MIDI (Format 0)</span></div>
+        </div>
+      </div>
+
+      <div class="report-modal-footer">
+        <button class="action-btn" id="btn-preview-midi-synth" style="display: none;">
+          <span id="preview-synth-text">▶ Play Transcribed Synth</span>
+        </button>
+        <button class="action-btn" id="btn-download-midi-file" style="background: var(--neon-purple); color: #fff; box-shadow: 0 0 12px rgba(189, 0, 255, 0.4); display: none;">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>Download .MID File</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- App Core Scripts -->
   <script src="js/audioDsp.js"></script>
   <script src="js/stemSeparator.js"></script>
+  <script src="js/midiTranscriber.js"></script>
   <script src="js/neuralClassifier.js"></script>
   <script src="js/visualizer3d.js"></script>
   <script src="js/app.js"></script>

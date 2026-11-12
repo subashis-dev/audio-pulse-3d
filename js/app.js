@@ -789,6 +789,156 @@ Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
     });
   });
 
+  /* ----------------- Audio-to-MIDI Neural Transcriber Handlers ----------------- */
+  const openMidiBtn = document.getElementById('btn-open-midi');
+  const midiModal = document.getElementById('midi-modal');
+  const midiModalCloseBtn = document.getElementById('midi-modal-close-btn');
+  const runMidiTranscribeBtn = document.getElementById('btn-run-midi-transcribe');
+  const midiTranscribeText = document.getElementById('btn-midi-transcribe-text');
+  const midiSourceSelect = document.getElementById('midi-source-select');
+  const pianoRollCanvas = document.getElementById('piano-roll-canvas');
+  const pianoRollHint = document.getElementById('piano-roll-hint');
+  const midiNoteCount = document.getElementById('midi-note-count');
+  const midiPitchRange = document.getElementById('midi-pitch-range');
+  const previewMidiSynthBtn = document.getElementById('btn-preview-midi-synth');
+  const previewSynthText = document.getElementById('preview-synth-text');
+  const downloadMidiFileBtn = document.getElementById('btn-download-midi-file');
+
+  if (openMidiBtn && midiModal) {
+    openMidiBtn.addEventListener('click', () => {
+      midiModal.classList.add('active');
+      if (window.SonixMidiTranscriber.notes.length) {
+        window.SonixMidiTranscriber.drawPianoRoll(
+          pianoRollCanvas,
+          window.SonixDsp.getCurrentTime(),
+          window.SonixDsp.duration || 30
+        );
+      }
+    });
+  }
+
+  if (midiModalCloseBtn && midiModal) {
+    midiModalCloseBtn.addEventListener('click', () => {
+      midiModal.classList.remove('active');
+      window.SonixMidiTranscriber.stopMidiPreview();
+      if (previewSynthText) previewSynthText.textContent = "▶ Play Transcribed Synth";
+    });
+  }
+
+  if (midiModal) {
+    midiModal.addEventListener('click', (e) => {
+      if (e.target === midiModal) {
+        midiModal.classList.remove('active');
+        window.SonixMidiTranscriber.stopMidiPreview();
+        if (previewSynthText) previewSynthText.textContent = "▶ Play Transcribed Synth";
+      }
+    });
+  }
+
+  if (runMidiTranscribeBtn) {
+    runMidiTranscribeBtn.addEventListener('click', async () => {
+      if (!window.SonixDsp.audioBuffer) {
+        alert("Please load or play a track first to transcribe MIDI!");
+        return;
+      }
+
+      // Determine target audio buffer based on dropdown
+      const source = midiSourceSelect ? midiSourceSelect.value : 'full';
+      let targetBuffer = window.SonixDsp.audioBuffer;
+      if (source === 'melody' && window.SonixStemSeparator.stems.other) {
+        targetBuffer = window.SonixStemSeparator.stems.other;
+      } else if (source === 'bass' && window.SonixStemSeparator.stems.bass) {
+        targetBuffer = window.SonixStemSeparator.stems.bass;
+      } else if (source === 'vocals' && window.SonixStemSeparator.stems.vocals) {
+        targetBuffer = window.SonixStemSeparator.stems.vocals;
+      }
+
+      runMidiTranscribeBtn.disabled = true;
+
+      try {
+        const notes = await window.SonixMidiTranscriber.transcribe(targetBuffer, (pct, msg) => {
+          midiTranscribeText.textContent = `${msg} (${pct}%)`;
+        });
+
+        midiTranscribeText.textContent = "Re-Transcribe Notes";
+        runMidiTranscribeBtn.disabled = false;
+
+        if (pianoRollHint) pianoRollHint.style.display = 'none';
+        if (midiNoteCount) midiNoteCount.textContent = notes.length;
+
+        if (notes.length) {
+          const minMidi = Math.min(...notes.map(n => n.midi));
+          const maxMidi = Math.max(...notes.map(n => n.midi));
+          if (midiPitchRange) {
+            midiPitchRange.textContent = `${window.SonixMidiTranscriber.midiToNoteName(minMidi)} - ${window.SonixMidiTranscriber.midiToNoteName(maxMidi)}`;
+          }
+
+          // Show action buttons
+          if (previewMidiSynthBtn) previewMidiSynthBtn.style.display = 'flex';
+          if (downloadMidiFileBtn) downloadMidiFileBtn.style.display = 'flex';
+
+          // Draw Piano Roll
+          window.SonixMidiTranscriber.drawPianoRoll(
+            pianoRollCanvas,
+            window.SonixDsp.getCurrentTime(),
+            window.SonixDsp.duration || 30
+          );
+        }
+
+      } catch (err) {
+        console.error("MIDI transcription error:", err);
+        midiTranscribeText.textContent = "Transcription Error";
+        runMidiTranscribeBtn.disabled = false;
+      }
+    });
+  }
+
+  // Play Transcribed Synth Preview
+  if (previewMidiSynthBtn) {
+    previewMidiSynthBtn.addEventListener('click', () => {
+      if (window.SonixMidiTranscriber.isPlayingMidi) {
+        window.SonixMidiTranscriber.stopMidiPreview();
+        previewSynthText.textContent = "▶ Play Transcribed Synth";
+      } else {
+        previewSynthText.textContent = "⏹ Stop Synth Preview";
+        window.SonixMidiTranscriber.playMidiPreview(() => {
+          previewSynthText.textContent = "▶ Play Transcribed Synth";
+        });
+      }
+    });
+  }
+
+  // Download .MID File
+  if (downloadMidiFileBtn) {
+    downloadMidiFileBtn.addEventListener('click', () => {
+      const title = trackNameEl.textContent.trim();
+      const midiBlob = window.SonixMidiTranscriber.exportMidiBlob(title);
+      if (!midiBlob) return;
+
+      const url = URL.createObjectURL(midiBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}_transcription.mid`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Live Piano Roll Redraw in Update Loop
+  const originalUpdateLoop = updateUiLoop;
+  function updateUiLoopWithPianoRoll() {
+    originalUpdateLoop();
+    if (midiModal && midiModal.classList.contains('active') && window.SonixMidiTranscriber.notes.length) {
+      window.SonixMidiTranscriber.drawPianoRoll(
+        pianoRollCanvas,
+        window.SonixDsp.getCurrentTime(),
+        window.SonixDsp.duration || 30
+      );
+    }
+  }
+
   // Auto-load demo on first visit
   setTimeout(() => {
     generateDemoTrack('synthwave');
