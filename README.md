@@ -20,6 +20,12 @@
   * Dedicated **Mute (M)**, **Solo (S)**, and volume faders per stem.
   * 3D visualizer dynamically morphs based on which stems are active (muting drums halts percussive kicks; soloing vocals isolates the glowing aura).
   * 1-click offline export of separated stems as standard uncompressed `.wav` files.
+* **Generative AI Music Studio (Offline Synthesis):**
+  * Synthesizes original multi-track electronic & acoustic audio compositions locally in your browser.
+  * Natural language prompt parser (e.g., *"dark synthwave in 130 bpm with punchy kick in A minor"*).
+  * Quick style presets: *⚡ Synthwave Overdrive*, *🔥 Cyber Dystopia*, *🌌 Lo-Fi Cosmic Chill*, *🌿 Ambient Ethereal*, and *🥁 Urban 808 Groove*.
+  * Complete manual controls: BPM (60–180), Musical Root Key (C through B), Scale (Minor, Major, Dorian, Phrygian), and Duration (16s, 32s, 48s).
+  * Automatically loads synthesized tracks directly into the 3D visualizer, DSP telemetry, stem separator, and MIDI transcriber.
 * **Audio-to-MIDI Neural Transcriber & Cyberpunk Piano Roll:**
   * Uses YIN pitch tracking and spectral harmonic peak autocorrelation to transcribe musical pitches into discrete notes.
   * Transcribes from the **Master Mix**, **Melody Stem**, **Bassline Stem**, or **Vocals Stem**.
