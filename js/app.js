@@ -198,6 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
       chip.innerHTML = `<span>${seg.name} • ${formatTime(seg.start)}</span>`;
       chip.addEventListener('click', () => {
         window.SonixDsp.seek(seg.start);
+        if (window.SonixStemSeparator && window.SonixStemSeparator.isStemModeActive && window.SonixDsp.isPlaying) {
+          window.SonixStemSeparator.playStems(seg.start);
+        }
       });
       structureTimeline.appendChild(chip);
     });
@@ -244,9 +247,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.SonixDsp.audioBuffer) return;
     if (window.SonixDsp.isPlaying) {
       window.SonixDsp.pause();
+      if (window.SonixStemSeparator && window.SonixStemSeparator.isStemModeActive) {
+        window.SonixStemSeparator.stopStems();
+      }
       updatePlayButton(false);
     } else {
+      const curTime = window.SonixDsp.getCurrentTime();
       window.SonixDsp.play();
+      if (window.SonixStemSeparator && window.SonixStemSeparator.isStemModeActive) {
+        window.SonixStemSeparator.playStems(curTime);
+      }
       updatePlayButton(true);
     }
   });
@@ -262,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     const targetSec = pos * window.SonixDsp.duration;
     window.SonixDsp.seek(targetSec);
+    if (window.SonixStemSeparator && window.SonixStemSeparator.isStemModeActive && window.SonixDsp.isPlaying) {
+      window.SonixStemSeparator.playStems(targetSec);
+    }
     waveformProgress.style.width = `${pos * 100}%`;
   };
 
@@ -685,6 +698,96 @@ Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
       downloadStoryFile(text, `Sonix3D_Story_Report_${title}.txt`);
     });
   }
+
+  /* ----------------- 4-Stem Neural Demixer UI Handlers ----------------- */
+  const runDemixBtn = document.getElementById('btn-run-demix');
+  const demixText = document.getElementById('btn-demix-text');
+  const demixerBadge = document.getElementById('demixer-status-badge');
+
+  if (runDemixBtn) {
+    runDemixBtn.addEventListener('click', async () => {
+      if (!window.SonixDsp.audioBuffer) {
+        alert("Please load or play a track first to extract stems!");
+        return;
+      }
+
+      runDemixBtn.disabled = true;
+      demixerBadge.textContent = "EXTRACTING...";
+      demixerBadge.style.color = "var(--neon-pink)";
+
+      try {
+        await window.SonixStemSeparator.separateStems(window.SonixDsp.audioBuffer, (pct, msg) => {
+          demixText.textContent = `${msg} (${pct}%)`;
+        });
+
+        demixText.textContent = "⚡ Stems Active (Demixed)";
+        demixerBadge.textContent = "4 STEMS ACTIVE";
+        demixerBadge.style.color = "var(--neon-green)";
+        runDemixBtn.style.background = "rgba(0, 255, 102, 0.15)";
+        runDemixBtn.style.borderColor = "var(--neon-green)";
+        runDemixBtn.style.color = "var(--neon-green)";
+        runDemixBtn.disabled = false;
+
+        // Switch playback to multi-track stems
+        const curTime = window.SonixDsp.getCurrentTime();
+        window.SonixStemSeparator.playStems(curTime);
+
+      } catch (e) {
+        console.error("Stem separation error:", e);
+        demixText.textContent = "Demix Error";
+        runDemixBtn.disabled = false;
+      }
+    });
+  }
+
+  // Mute / Solo / Volume Handlers
+  document.querySelectorAll('.stem-ctrl-btn.btn-mute').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const stem = btn.dataset.stem;
+      const isMuted = window.SonixStemSeparator.toggleMute(stem);
+      btn.classList.toggle('active', isMuted);
+      const row = document.querySelector(`.stem-channel-row[data-stem="${stem}"]`);
+      if (row) row.classList.toggle('muted', isMuted);
+    });
+  });
+
+  document.querySelectorAll('.stem-ctrl-btn.btn-solo').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const stem = btn.dataset.stem;
+      const isSolo = window.SonixStemSeparator.toggleSolo(stem);
+      btn.classList.toggle('active', isSolo);
+      const row = document.querySelector(`.stem-channel-row[data-stem="${stem}"]`);
+      if (row) row.classList.toggle('solo', isSolo);
+    });
+  });
+
+  document.querySelectorAll('.stem-vol-slider').forEach(slider => {
+    slider.addEventListener('input', (e) => {
+      const stem = e.target.dataset.stem;
+      window.SonixStemSeparator.setStemVolume(stem, parseFloat(e.target.value));
+    });
+  });
+
+  // Download Individual Stem WAV
+  document.querySelectorAll('.stem-ctrl-btn.btn-dl').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const stem = btn.dataset.stem;
+      const wavBlob = window.SonixStemSeparator.exportStemWav(stem);
+      if (!wavBlob) {
+        alert(`Please click 'Extract 4 Stems' first to generate ${stem} audio!`);
+        return;
+      }
+      const title = trackNameEl.textContent.trim();
+      const url = URL.createObjectURL(wavBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}_${stem}.wav`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  });
 
   // Auto-load demo on first visit
   setTimeout(() => {

@@ -96,6 +96,75 @@
         </div>
       </div>
 
+      <!-- 4-Stem Neural Demixer Console -->
+      <div class="hud-card">
+        <div class="card-title">
+          <span>Neural Stem Demixer</span>
+          <span class="highlight" id="demixer-status-badge">AI SPLITTER</span>
+        </div>
+        
+        <div class="demixer-action-row">
+          <button class="action-btn accent-pink" id="btn-run-demix" style="width: 100%; justify-content: center; margin-bottom: 8px;">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            <span id="btn-demix-text">Extract 4 Stems (Demix)</span>
+          </button>
+        </div>
+
+        <div class="stems-mixer-container" id="stems-mixer-container">
+          <!-- Vocals -->
+          <div class="stem-channel-row" data-stem="vocals">
+            <div class="stem-top-line">
+              <div class="stem-info"><span class="stem-icon">🎤</span><span class="stem-name">Vocals</span></div>
+              <div class="stem-btns">
+                <button class="stem-ctrl-btn btn-mute" data-stem="vocals" title="Mute Vocals">M</button>
+                <button class="stem-ctrl-btn btn-solo" data-stem="vocals" title="Solo Vocals">S</button>
+                <button class="stem-ctrl-btn btn-dl" data-stem="vocals" title="Download Vocals WAV">💾</button>
+              </div>
+            </div>
+            <input type="range" class="stem-vol-slider" data-stem="vocals" min="0" max="1" step="0.01" value="1">
+          </div>
+
+          <!-- Drums -->
+          <div class="stem-channel-row" data-stem="drums">
+            <div class="stem-top-line">
+              <div class="stem-info"><span class="stem-icon">🥁</span><span class="stem-name">Drums</span></div>
+              <div class="stem-btns">
+                <button class="stem-ctrl-btn btn-mute" data-stem="drums" title="Mute Drums">M</button>
+                <button class="stem-ctrl-btn btn-solo" data-stem="drums" title="Solo Drums">S</button>
+                <button class="stem-ctrl-btn btn-dl" data-stem="drums" title="Download Drums WAV">💾</button>
+              </div>
+            </div>
+            <input type="range" class="stem-vol-slider" data-stem="drums" min="0" max="1" step="0.01" value="1">
+          </div>
+
+          <!-- Bass -->
+          <div class="stem-channel-row" data-stem="bass">
+            <div class="stem-top-line">
+              <div class="stem-info"><span class="stem-icon">🎸</span><span class="stem-name">Bass</span></div>
+              <div class="stem-btns">
+                <button class="stem-ctrl-btn btn-mute" data-stem="bass" title="Mute Bass">M</button>
+                <button class="stem-ctrl-btn btn-solo" data-stem="bass" title="Solo Bass">S</button>
+                <button class="stem-ctrl-btn btn-dl" data-stem="bass" title="Download Bass WAV">💾</button>
+              </div>
+            </div>
+            <input type="range" class="stem-vol-slider" data-stem="bass" min="0" max="1" step="0.01" value="1">
+          </div>
+
+          <!-- Melody -->
+          <div class="stem-channel-row" data-stem="other">
+            <div class="stem-top-line">
+              <div class="stem-info"><span class="stem-icon">🎹</span><span class="stem-name">Melody</span></div>
+              <div class="stem-btns">
+                <button class="stem-ctrl-btn btn-mute" data-stem="other" title="Mute Melody">M</button>
+                <button class="stem-ctrl-btn btn-solo" data-stem="other" title="Solo Melody">S</button>
+                <button class="stem-ctrl-btn btn-dl" data-stem="other" title="Download Melody WAV">💾</button>
+              </div>
+            </div>
+            <input type="range" class="stem-vol-slider" data-stem="other" min="0" max="1" step="0.01" value="1">
+          </div>
+        </div>
+      </div>
+
       <!-- DSP Telemetry HUD -->
       <div class="hud-card">
         <div class="card-title">
@@ -329,6 +398,7 @@
 
   <!-- App Core Scripts -->
   <script src="js/audioDsp.js"></script>
+  <script src="js/stemSeparator.js"></script>
   <script src="js/neuralClassifier.js"></script>
   <script src="js/visualizer3d.js"></script>
   <script src="js/app.js"></script>

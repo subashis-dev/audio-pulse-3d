@@ -326,9 +326,23 @@ class Visualizer3D {
     const bands = audioData ? audioData.bands : { subBass: 0, bass: 0, mid: 0, highMid: 0, presence: 0 };
     const isPlaying = window.SonixDsp && window.SonixDsp.isPlaying;
 
-    const bassImpact = Math.max(0.05, bands.subBass * 1.5 + bands.bass * 0.8);
-    const midEnergy = Math.max(0.05, bands.mid * 1.2);
-    const treble = Math.max(0.05, bands.presence * 1.0);
+    // Check if 4-Stem Separation Mode is active
+    let stemEnergies = null;
+    if (window.SonixStemSeparator && window.SonixStemSeparator.isStemModeActive) {
+      stemEnergies = window.SonixStemSeparator.getStemEnergies();
+    }
+
+    const bassImpact = stemEnergies 
+      ? Math.max(0.05, stemEnergies.drums * 1.8 + stemEnergies.bass * 1.2)
+      : Math.max(0.05, bands.subBass * 1.5 + bands.bass * 0.8);
+      
+    const midEnergy = stemEnergies
+      ? Math.max(0.05, stemEnergies.vocals * 1.5 + stemEnergies.other * 1.0)
+      : Math.max(0.05, bands.mid * 1.2);
+
+    const treble = stemEnergies
+      ? Math.max(0.05, stemEnergies.other * 1.2)
+      : Math.max(0.05, bands.presence * 1.0);
 
     /* 1. Nebula Update */
     if (this.mode === 'nebula' && this.nebulaPoints) {
