@@ -20,6 +20,12 @@
   * Dedicated **Mute (M)**, **Solo (S)**, and volume faders per stem.
   * 3D visualizer dynamically morphs based on which stems are active (muting drums halts percussive kicks; soloing vocals isolates the glowing aura).
   * 1-click offline export of separated stems as standard uncompressed `.wav` files.
+* **Audio-to-MIDI Neural Transcriber & Cyberpunk Piano Roll:**
+  * Uses YIN pitch tracking and spectral harmonic peak autocorrelation to transcribe musical pitches into discrete notes.
+  * Transcribes from the **Master Mix**, **Melody Stem**, **Bassline Stem**, or **Vocals Stem**.
+  * Interactive **Cyberpunk Piano Roll** with real-time active playhead note illumination.
+  * In-browser polyphonic synth preview to audition the transcribed notes directly in Web Audio.
+  * 1-click **Download .MID File** (Standard MIDI Format 0) ready for instant drag-and-drop into FL Studio, Ableton Live, Logic Pro, or Cubase.
 * **Dual Intelligence Export:**
   * **Export JSON:** Full raw acoustic and neural telemetry object for programmatic analysis.
   * **Export Story Report (.txt):** In-depth natural language acoustic intelligence dossier featuring harmonic mixing guidance, tempo cadence evaluation, dynamic mastering analysis, and curator recommendations.
