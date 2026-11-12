@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentAnalysis, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `Sonix3D_Intelligence_${trackNameEl.textContent.trim()}.json`);
+      downloadAnchor.setAttribute("download", `AudioPulse3D_Intelligence_${trackNameEl.textContent.trim()}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
@@ -573,10 +573,10 @@ ${segList}
 
     return `
 ================================================================================
-🌌 SONIX3D ACOUSTIC INTELLIGENCE DOSSIER
+🌌 AUDIOPULSE 3D ACOUSTIC INTELLIGENCE DOSSIER
 ================================================================================
 Composition Title : ${title}
-Analysis Engine   : Sonix3D Offline DSP & Neural Spectrogram AI (ONNX)
+Analysis Engine   : AudioPulse 3D Offline DSP & Neural Spectrogram AI (ONNX)
 Hardware Platform : Local Edge Inference (100% Sovereign & Cloud-Free)
 Timestamp         : ${new Date().toUTCString()}
 
@@ -634,7 +634,7 @@ ${dynamicsNarrative}
 "${title}" is an evocative piece possessing a well-defined ${bpm} BPM cadence anchored in ${key} (${camelot}). Its balance of dynamic headroom (${analysis.dynamicRange} dB) and harmonic resonance delivers an engaging acoustic profile suitable for high-fidelity playback, DJ performance sets, and immersive 3D spatial visualization.
 
 ================================================================================
-Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
+Generated 100% offline by AudioPulse 3D Autonomous Audio Intelligence Engine.
 ================================================================================
 `.trim();
   }
@@ -695,7 +695,7 @@ Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
     downloadReportTxtBtn.addEventListener('click', () => {
       const text = reportTextContent.textContent;
       const title = trackNameEl.textContent.trim();
-      downloadStoryFile(text, `Sonix3D_Story_Report_${title}.txt`);
+      downloadStoryFile(text, `AudioPulse3D_Story_Report_${title}.txt`);
     });
   }
 
@@ -918,7 +918,7 @@ Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
       const url = URL.createObjectURL(midiBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${title}_transcription.mid`;
+      a.download = `${title}_AudioPulse3D.mid`;
       document.body.appendChild(a);
       a.click();
       a.remove();

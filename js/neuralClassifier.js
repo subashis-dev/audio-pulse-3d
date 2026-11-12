@@ -34,7 +34,7 @@ class NeuralAudioClassifier {
         };
         this.session = await ort.InferenceSession.create(this.modelPath, options);
         this.isReady = true;
-        console.log("⚡ Sonix3D Neural Classifier Loaded Successfully via ONNX Web Runtime");
+        console.log("⚡ AudioPulse 3D Neural Classifier Loaded Successfully via ONNX Web Runtime");
       } else {
         console.warn("⚠️ ONNX Runtime Web library not detected, running in DSP heuristic mode");
       }

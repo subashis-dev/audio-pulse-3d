@@ -1,6 +1,6 @@
-# 🌌 SONIX3D — Offline 3D Audio & Music Intelligence Engine
+# 🌌 AudioPulse 3D — Offline 3D Audio & Music Intelligence Engine
 
-> **100% Offline Edge Audio Intelligence & Interactive 3D WebGL Spectrogram Laboratory**  
+> **100% Offline Edge Audio Intelligence, AI Demixer, MIDI Transcriber & 3D WebGL Spectrogram Laboratory**  
 > Powered by Three.js, Web Audio DSP, and a custom PyTorch Convolutional Neural Network exported to ONNX Web.
 
 [![Status](https://img.shields.io/badge/Status-Complete-00f3ff.svg)](#)
@@ -11,27 +11,26 @@
 ---
 
 ## 🌟 Overview
-**Sonix3D** is an autonomous, client-side music intelligence engine and real-time 3D audio visualizer. It allows users to drop or load any audio file (MP3, WAV, FLAC, OGG, M4A) and instantaneously deconstruct its acoustic anatomy:
+**AudioPulse 3D** is an autonomous, client-side music intelligence engine, AI demixer, and real-time 3D audio visualizer. It allows users to drop or load any audio file (MP3, WAV, FLAC, OGG, M4A) or synthesize new music locally, and instantaneously deconstruct its acoustic anatomy:
 * **Real-time 60 FPS 3D WebGL Visualization:** Three dynamic reactive modes (Orbital Particle Nebula, Flowing Spectrogram Mountain, and Cymatics Resonance Sphere).
 * **Mathematical Audio DSP Engine:** Extracts exact BPM tempo, musical key & scale (via 12-dimensional Chroma Pitch Class Profiles & Krumhansl-Schmuckler harmonic correlation), Camelot Wheel mixing codes, dynamic range, RMS loudness, and peak dBFS.
-* **Deep Neural Spectrogram AI:** A custom 650K-parameter PyTorch CNN (`SonixAudioNet`) trained on an RTX 3060 and exported to ONNX Web for real-time offline genre classification and mood/energy analysis.
+* **Multi-Head Neural AI Classifier:** A custom PyTorch CNN (`AudioPulseNet`) trained on an RTX 3060 and exported to ONNX Web for real-time offline genre classification, mood/energy analysis, and 8-instrument presence detection.
 * **Neural 4-Stem Demixer & Multitrack Mixer:**
   * Separates any input audio into 4 isolated audio streams: 🎤 **Vocals**, 🥁 **Drums**, 🎸 **Bass**, and 🎹 **Melody**.
   * Dedicated **Mute (M)**, **Solo (S)**, and volume faders per stem.
   * 3D visualizer dynamically morphs based on which stems are active (muting drums halts percussive kicks; soloing vocals isolates the glowing aura).
   * 1-click offline export of separated stems as standard uncompressed `.wav` files.
-* **Generative AI Music Studio (Offline Synthesis):**
-  * Synthesizes original multi-track electronic & acoustic audio compositions locally in your browser.
-  * Natural language prompt parser (e.g., *"dark synthwave in 130 bpm with punchy kick in A minor"*).
-  * Quick style presets: *⚡ Synthwave Overdrive*, *🔥 Cyber Dystopia*, *🌌 Lo-Fi Cosmic Chill*, *🌿 Ambient Ethereal*, and *🥁 Urban 808 Groove*.
-  * Complete manual controls: BPM (60–180), Musical Root Key (C through B), Scale (Minor, Major, Dorian, Phrygian), and Duration (16s, 32s, 48s).
-  * Automatically loads synthesized tracks directly into the 3D visualizer, DSP telemetry, stem separator, and MIDI transcriber.
 * **Audio-to-MIDI Neural Transcriber & Cyberpunk Piano Roll:**
   * Uses YIN pitch tracking and spectral harmonic peak autocorrelation to transcribe musical pitches into discrete notes.
   * Transcribes from the **Master Mix**, **Melody Stem**, **Bassline Stem**, or **Vocals Stem**.
   * Interactive **Cyberpunk Piano Roll** with real-time active playhead note illumination.
   * In-browser polyphonic synth preview to audition the transcribed notes directly in Web Audio.
   * 1-click **Download .MID File** (Standard MIDI Format 0) ready for instant drag-and-drop into FL Studio, Ableton Live, Logic Pro, or Cubase.
+* **Generative AI Music Studio (Offline Synthesis):**
+  * Synthesizes original multi-track electronic & acoustic audio compositions locally in your browser.
+  * Natural language prompt parser (e.g., *"dark synthwave in 130 bpm with punchy kick in A minor"*).
+  * Quick style presets: *⚡ Synthwave Overdrive*, *🔥 Cyber Dystopia*, *🌌 Lo-Fi Cosmic Chill*, *🌿 Ambient Ethereal*, and *🥁 Urban 808 Groove*.
+  * Automatically loads synthesized tracks directly into the 3D visualizer, DSP telemetry, stem separator, and MIDI transcriber.
 * **Dual Intelligence Export:**
   * **Export JSON:** Full raw acoustic and neural telemetry object for programmatic analysis.
   * **Export Story Report (.txt):** In-depth natural language acoustic intelligence dossier featuring harmonic mixing guidance, tempo cadence evaluation, dynamic mastering analysis, and curator recommendations.
@@ -42,23 +41,22 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        SONIX3D EDGE PIPELINE                           │
+│                      AUDIOPULSE 3D EDGE PIPELINE                       │
 └────────────────────────────────────────────────────────────────────────┘
                                     │
-                         [ Upload Any Audio File ]
+               [ Upload Any Audio File OR AI Prompt Synthesis ]
                                     │
          ┌──────────────────────────┴──────────────────────────┐
          ▼                                                     ▼
 ┌─────────────────────────────────┐   ┌──────────────────────────────────┐
-│    1. REAL-TIME DSP ENGINE      │   │    2. NEURAL SPECTROGRAM AI      │
-│     (Pure Mathematical DSP)     │   │       (ONNX / PyTorch Model)     │
+│    1. REAL-TIME DSP & DEMIXER   │   │   2. MULTI-HEAD NEURAL AI (ONNX) │
+│     (Pure Mathematical DSP)     │   │       (Genre, Mood, Instruments) │
 ├─────────────────────────────────┤   ├──────────────────────────────────┤
 │ • 60 FPS 3D Three.js Visualizer │   │ • Mel-Spectrogram 2D Feature Map │
-│ • Exact BPM / Tempo Detection   │   │ • Deep CNN Classifier (~650K)    │
-│ • Key & Scale (Chroma Vectors)  │   │ • Music Genre Classification     │
-│ • 7-Band Frequency EQ Spectrum  │   │   (Rock, EDM, Jazz, Pop, etc.)   │
-│ • Loudness / RMS & Peak dB      │   │ • Mood & Valence Estimation      │
-│ • Waveform scrub & cue points   │   │ • 100% Offline (ONNX Web / WASM) │
+│ • Exact BPM / Tempo Detection   │   │ • 10-Class Genre Probabilities   │
+│ • Key & Scale (Chroma Vectors)  │   │ • 8-Instrument Presence Matrix   │
+│ • 4-Stem Demixer (Mute / Solo)  │   │ • Mood & Valence Radar Profile   │
+│ • Audio-to-MIDI Transcription   │   │ • 100% Offline (ONNX Web / WASM) │
 └─────────────────────────────────┘   └──────────────────────────────────┘
          │                                                     │
          └──────────────────────────┬──────────────────────────┘
@@ -67,43 +65,23 @@
 │                   CYBERPUNK AUDIO INTELLIGENCE HUD                     │
 │   • 3D Audio Visualizer (Nebula, Spectrogram Terrain, Cymatics)        │
 │   • Live Telemetry HUD (BPM, Key, Dynamic Range, Sample Rate)          │
-│   • AI Classification Card (Genre probabilities + Mood Radar)          │
-│   • Export Full Song Intelligence Report (.json)                       │
+│   • 4-Stem Channel Faders (Vocals, Drums, Bass, Melody)                │
+│   • Interactive Piano Roll with .MID and .WAV Downloads                │
+│   • Export Full Song Intelligence Report (.json & .txt Story Dossier)  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ⚡ Key Modules
-
-### 1. 🎛️ Digital Signal Processing (`js/audioDsp.js`)
-* **BPM / Tempo Estimation:** Computes frame energy envelope, generates onset novelty curves via positive first derivatives, and autocorrelates across 60–180 BPM lags.
-* **Key & Scale Detection:** Accumulates energy into a 12-semitone pitch class profile (Chroma vector) and calculates Pearson correlation coefficients against Krumhansl-Kessler Major and Minor tonality templates. Maps the result to standard notation and DJ Camelot Wheel codes (e.g., `8B` for C Major, `8A` for A Minor).
-* **Acoustic Dynamics:** Computes Peak dBFS, RMS loudness, and Crest Factor (Dynamic Range).
-* **7-Band Frequency Breakdown:** Real-time bin energy integration across Sub-Bass (20–60Hz), Bass (60–250Hz), Low-Mids (250–500Hz), Midrange (500–2kHz), Upper-Mids (2–4kHz), Presence (4–6kHz), and Brilliance (6–20kHz).
-
-### 2. 🌌 3D WebGL Visualizer (`js/visualizer3d.js`)
-* **Mode 1 — Orbital Particle Nebula:** 8,000 instanced particles in a golden spiral galaxy configuration that pulse radially on sub-bass kicks and drift through 3D harmonic fields.
-* **Mode 2 — 3D Spectrogram Terrain:** A 50x50 dynamic wireframe mesh displacing rows forward each frame based on live frequency bins, creating a glowing retro synthwave landscape.
-* **Mode 3 — Cymatics Geometric Sphere:** A morphing icosahedron sphere surrounded by concentric orbital rings spinning at speeds modulated by high-frequency transients.
-* **Color Themes:** Cyber Neon, Emerald Matrix, Deep Violet, and Solar Gold.
-
-### 3. 🧠 Neural Spectrogram AI (`train/` & `js/neuralClassifier.js`)
-* **Architecture:** `SonixAudioNet` — 4-stage residual convolutional network with batch normalization, leaky ReLUs, global average pooling, and dual prediction heads.
-* **Trained On:** NVIDIA GeForce RTX 3060 Laptop GPU (CUDA 12.4).
-* **Exported To:** ONNX Runtime Web (`models/sonix_classifier.onnx`, 9.3 MB) for browser execution.
-
----
-
 ## 🚀 Running Locally
 
-To run Sonix3D on your local machine:
+To run AudioPulse 3D on your local machine:
 
 ```powershell
 # Navigate to the project directory
 cd C:\Users\subas\Claude\sonix3d
 
-# Start any standard local HTTP server
+# Start local HTTP server
 python -m http.server 8090
 ```
 
@@ -114,17 +92,5 @@ http://localhost:8090
 
 ---
 
-## 📊 Retraining the Neural Model
-
-To retrain the neural model on your own GPU:
-
-```powershell
-cd C:\Users\subas\Claude\sonix3d\train
-python train.py
-```
-This will train `SonixAudioNet` on CUDA and automatically export the updated `sonix_classifier.onnx` into `models/`.
-
----
-
 ## 📜 License
-MIT License. Built for local offline edge intelligence.
+MIT License. Built for local sovereign edge intelligence.
