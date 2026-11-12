@@ -939,6 +939,128 @@ Generated 100% offline by Sonix3D Autonomous Audio Intelligence Engine.
     }
   }
 
+  /* ----------------- Generative AI Music Studio Handlers ----------------- */
+  const openGenBtn = document.getElementById('btn-open-generator');
+  const genModal = document.getElementById('generator-modal');
+  const genModalCloseBtn = document.getElementById('gen-modal-close-btn');
+  const genPromptInput = document.getElementById('gen-prompt-input');
+  const genSliderBpm = document.getElementById('gen-slider-bpm');
+  const genValBpm = document.getElementById('gen-val-bpm');
+  const genSelectKey = document.getElementById('gen-select-key');
+  const genSelectScale = document.getElementById('gen-select-scale');
+  const genValKey = document.getElementById('gen-val-key');
+  const genSelectDuration = document.getElementById('gen-select-duration');
+  const genValDuration = document.getElementById('gen-val-duration');
+  const triggerSynthesizeBtn = document.getElementById('btn-trigger-synthesize');
+  const triggerGenText = document.getElementById('btn-trigger-gen-text');
+
+  let activeGenStyle = 'synthwave';
+
+  if (openGenBtn && genModal) {
+    openGenBtn.addEventListener('click', () => {
+      genModal.classList.add('active');
+    });
+  }
+
+  if (genModalCloseBtn && genModal) {
+    genModalCloseBtn.addEventListener('click', () => {
+      genModal.classList.remove('active');
+    });
+  }
+
+  if (genModal) {
+    genModal.addEventListener('click', (e) => {
+      if (e.target === genModal) {
+        genModal.classList.remove('active');
+      }
+    });
+  }
+
+  // Sliders and controls live update
+  if (genSliderBpm) {
+    genSliderBpm.addEventListener('input', (e) => {
+      if (genValBpm) genValBpm.textContent = e.target.value;
+    });
+  }
+
+  const updateKeyDisplay = () => {
+    if (genValKey && genSelectKey && genSelectScale) {
+      genValKey.textContent = `${genSelectKey.value} ${genSelectScale.value}`;
+    }
+  };
+  if (genSelectKey) genSelectKey.addEventListener('change', updateKeyDisplay);
+  if (genSelectScale) genSelectScale.addEventListener('change', updateKeyDisplay);
+
+  if (genSelectDuration && genValDuration) {
+    genSelectDuration.addEventListener('change', (e) => {
+      genValDuration.textContent = `${e.target.value}s (Loop)`;
+    });
+  }
+
+  // Preset buttons click handler
+  document.querySelectorAll('.gen-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.gen-preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      activeGenStyle = btn.dataset.style;
+      const bpm = parseInt(btn.dataset.bpm);
+      const key = btn.dataset.key;
+      const scale = btn.dataset.scale;
+
+      if (genSliderBpm) genSliderBpm.value = bpm;
+      if (genValBpm) genValBpm.textContent = bpm;
+      if (genSelectKey) genSelectKey.value = key;
+      if (genSelectScale) genSelectScale.value = scale;
+      updateKeyDisplay();
+    });
+  });
+
+  // Synthesize Track Trigger
+  if (triggerSynthesizeBtn) {
+    triggerSynthesizeBtn.addEventListener('click', async () => {
+      triggerSynthesizeBtn.disabled = true;
+
+      const promptText = genPromptInput ? genPromptInput.value.trim() : "";
+      const bpm = genSliderBpm ? parseInt(genSliderBpm.value) : 128;
+      const key = genSelectKey ? genSelectKey.value : "A";
+      const scale = genSelectScale ? genSelectScale.value : "Minor";
+      const duration = genSelectDuration ? parseInt(genSelectDuration.value) : 32;
+
+      try {
+        const result = await window.SonixGenerator.generateMusic({
+          prompt: promptText,
+          bpm: bpm,
+          key: key,
+          scale: scale,
+          style: activeGenStyle,
+          duration: duration
+        }, (pct, msg) => {
+          if (triggerGenText) triggerGenText.textContent = `${msg} (${pct}%)`;
+        });
+
+        triggerGenText.textContent = "⚡ Generated & Ingested!";
+        triggerSynthesizeBtn.disabled = false;
+
+        // Close modal
+        genModal.classList.remove('active');
+
+        // Reset text after close
+        setTimeout(() => {
+          if (triggerGenText) triggerGenText.textContent = "Synthesize Track & Load into 3D Viewport";
+        }, 1200);
+
+        // Load directly into the entire pipeline (3D Viewport, DSP, AI, Waveform)
+        processAudioBuffer(result.title, result.buffer);
+
+      } catch (err) {
+        console.error("Music synthesis error:", err);
+        if (triggerGenText) triggerGenText.textContent = "Generation Error";
+        triggerSynthesizeBtn.disabled = false;
+      }
+    });
+  }
+
   // Auto-load demo on first visit
   setTimeout(() => {
     generateDemoTrack('synthwave');

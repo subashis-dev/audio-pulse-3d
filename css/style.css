@@ -1052,3 +1052,85 @@ body {
   font-family: var(--font-mono);
   color: var(--text-muted);
 }
+
+/* ----------------- Generative AI Studio Modal ----------------- */
+.gen-prompt-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gen-prompt-field {
+  width: 100%;
+  background: #080c16;
+  border: 1px solid rgba(0, 243, 255, 0.35);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.gen-prompt-field:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.gen-presets-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.gen-preset-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gen-preset-btn:hover {
+  color: #fff;
+  border-color: var(--neon-cyan);
+}
+
+.gen-preset-btn.active {
+  background: rgba(0, 255, 102, 0.12);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+}
+
+.gen-sliders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.gen-slider-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gen-slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
